@@ -37,7 +37,9 @@ class PersonController extends Controller
         $p->phone = $request->phone;
         $p->save();
         
-        return $p;
+        $all_p = DB::table('persons')
+                    ->select('*')->get();
+        return $all_p;
     }
 
     /**
@@ -72,5 +74,11 @@ class PersonController extends Controller
     public function destroy($id)
     {
         //
+        
+    }
+
+    public function excel_export()
+    {
+        
     }
 }
