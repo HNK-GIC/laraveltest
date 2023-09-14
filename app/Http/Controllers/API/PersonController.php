@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Exports\PersonExport;
 use App\Models\Person;
+use App\Service\PersonService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PersonController extends Controller
 {
@@ -14,11 +17,17 @@ class PersonController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    private $personService;
+
+    public function __construct(PersonService $personService)
+    {
+        $this->personService = $personService;
+    }
+
     public function index()
     {
-        $all_p = DB::table('persons')
-                    ->select('*')->get();
-        return $all_p;
+        $response = $this->personService->getList();
+        return $response;
     }
 
     /**
@@ -29,17 +38,8 @@ class PersonController extends Controller
      */
     public function store(Request $request)
     {
-        $p = new Person();
-        $p->reg_no = $request->reg_no;
-        $p->name = $request->name;
-        $p->dob = $request->dob;
-        $p->address = $request->address;
-        $p->phone = $request->phone;
-        $p->save();
-        
-        $all_p = DB::table('persons')
-                    ->select('*')->get();
-        return $all_p;
+        $response = $this->personService->save($request->all());
+        return $response;
     }
 
     /**
@@ -79,6 +79,11 @@ class PersonController extends Controller
 
     public function excel_export()
     {
-        
+        return Excel::download(new PersonExport(), 'person.xlsx');
+    }
+
+    public function serchperson(Request $request)
+    {
+        return $this->personService->search($request->all());
     }
 }

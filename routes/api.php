@@ -20,3 +20,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::apiResource('person',PersonController::class);
+Route::get('excel_export', [PersonController::class, 'excel_export']);
+Route::get('search_person', [PersonController::class, 'serchperson']);
